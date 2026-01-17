@@ -3,17 +3,24 @@ const uploadInput = document.getElementById('upload');
 const vignette = document.getElementById('vignette');
 const grain = document.getElementById('grain');
 
-// স্লাইডার ধরুন
+// স্লাইডারগুলো সিলেক্ট করা
 const brightness = document.getElementById('brightness');
 const contrast = document.getElementById('contrast');
 const saturation = document.getElementById('saturation');
 const grainRange = document.getElementById('grainRange');
 const vignetteRange = document.getElementById('vignetteRange');
 
-// ছবি আপলোড লজিক
+// ছবি আপলোড লজিক (মোবাইল ফ্রেন্ডলি FileReader)
 uploadInput.onchange = (e) => {
     const file = e.target.files[0];
-    if (file) mainImage.src = URL.createObjectURL(file);
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            mainImage.src = event.target.result;
+            mainImage.style.display = "block"; // ছবি দেখা নিশ্চিত করা
+        }
+        reader.readAsDataURL(file);
+    }
 };
 
 // ফিল্টার আপডেট ফাংশন
@@ -49,8 +56,10 @@ document.querySelectorAll('.preset-btn').forEach(btn => {
             brightness.value = 110; contrast.value = 90; saturation.value = 70;
             mainImage.style.filter += " sepia(40%)";
         } else {
+            // Reset All
             brightness.value = 100; contrast.value = 100; saturation.value = 100;
             grainRange.value = 0; vignetteRange.value = 0;
+            mainImage.style.filter = "none";
         }
         updateFilters();
     };
@@ -60,13 +69,16 @@ document.querySelectorAll('.preset-btn').forEach(btn => {
 document.getElementById('downloadBtn').onclick = () => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
+    
+    // ছবি লোড হওয়া পর্যন্ত নিশ্চিত করা
     canvas.width = mainImage.naturalWidth;
     canvas.height = mainImage.naturalHeight;
+    
     ctx.filter = getComputedStyle(mainImage).filter;
     ctx.drawImage(mainImage, 0, 0);
     
     const link = document.createElement('a');
     link.download = 'cinema_edit.png';
-    link.href = canvas.toDataURL();
+    link.href = canvas.toDataURL('image/png');
     link.click();
 };

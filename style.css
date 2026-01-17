@@ -1,0 +1,28 @@
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+body { background-color: #050505; color: #eee; height: 100vh; overflow: hidden; }
+
+.navbar { height: 70px; padding: 0 5%; display: flex; justify-content: space-between; align-items: center; background: #000; border-bottom: 1px solid #222; }
+.logo { font-size: 1.5rem; font-weight: 800; letter-spacing: 3px; }
+.logo span { color: #00d4ff; }
+
+.editor-container { display: flex; height: calc(100vh - 70px); }
+
+.preview-panel { flex: 3; display: flex; justify-content: center; align-items: center; background: radial-gradient(circle, #151515 0%, #050505 100%); position: relative; }
+.canvas-box { position: relative; max-width: 80%; display: flex; justify-content: center; align-items: center; border-radius: 8px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+#main-image { max-width: 100%; height: auto; display: block; }
+
+/* Effects Overlays */
+.vignette-overlay { position: absolute; inset: 0; pointer-events: none; transition: 0.3s; }
+.grain-overlay { position: absolute; inset: 0; pointer-events: none; opacity: 0; background-image: url('https://www.transparenttextures.com/patterns/stardust.png'); }
+
+.controls-panel { flex: 1; min-width: 320px; background: #0f0f0f; padding: 25px; border-left: 1px solid #222; overflow-y: auto; }
+.control-group { margin-bottom: 25px; }
+label { display: block; font-size: 12px; text-transform: uppercase; color: #777; margin-bottom: 10px; }
+input[type="range"] { width: 100%; cursor: pointer; accent-color: #00d4ff; }
+
+.preset-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+.preset-btn { background: #1a1a1a; border: 1px solid #333; color: #fff; padding: 12px; cursor: pointer; transition: 0.2s; font-size: 13px; }
+.preset-btn:hover { border-color: #00d4ff; background: #222; }
+
+.upload-label, .save-btn { display: block; width: 100%; text-align: center; background: #00d4ff; color: #000; padding: 14px; border-radius: 4px; font-weight: bold; cursor: pointer; border: none; margin-top: 20px; transition: 0.3s; }
+.save-btn:hover { background: #00b8e6; transform: translateY(-2px); }

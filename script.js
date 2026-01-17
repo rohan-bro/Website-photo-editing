@@ -2,13 +2,14 @@ const mainImage = document.getElementById('main-image');
 const uploadInput = document.getElementById('upload');
 const vignette = document.getElementById('vignette');
 
+// সব স্লাইডার এবং কন্ট্রোল সিলেক্ট করা
 const controls = ['brightness', 'contrast', 'saturation', 'hue', 'blur', 'vignetteRange'];
 const elements = {};
 controls.forEach(id => elements[id] = document.getElementById(id));
 
-let savedEdit = null;
+let savedEdit = null; // কপি করা সেটিংস রাখার জন্য
 
-// ইমেজ আপলোড লজিক
+// ছবি আপলোড লজিক
 uploadInput.onchange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -22,7 +23,7 @@ uploadInput.onchange = (e) => {
     }
 };
 
-// ফিল্টার অ্যাপ্লাই করার ফাংশন
+// ফিল্টার অ্যাপ্লাই করার মূল ফাংশন
 function applyFilters() {
     if(!mainImage.src || mainImage.src === "") return;
     
@@ -37,30 +38,31 @@ function applyFilters() {
     `;
     
     mainImage.style.filter = filterValue;
+    mainImage.style.WebkitFilter = filterValue; // মোবাইল ব্রাউজারের জন্য
     vignette.style.boxShadow = `inset 0 0 ${vignetteRange.value * 2.5}px rgba(0,0,0,0.8)`;
 }
 
-// স্লাইডার মুভ করলে ফিল্টার আপডেট হবে
+// স্লাইডার মুভ করলেই ছবি আপডেট হবে
 Object.values(elements).forEach(el => el.oninput = applyFilters);
 
-// COPY EDITS: বর্তমান সেটিংস সেভ করা
+// COPY EDITS: বর্তমান ছবির এডিট কপি করা
 document.getElementById('copySettings').onclick = () => {
-    if(!mainImage.src) return alert("Please upload a photo first!");
+    if(!mainImage.src) return alert("আগে একটি ছবি আপলোড করুন!");
     savedEdit = {};
     controls.forEach(id => savedEdit[id] = elements[id].value);
-    alert("✨ Aesthetic edits copied! Now upload a new photo.");
+    alert("✨ Edit Settings Copied! এবার নতুন ছবি আপলোড করে Paste বাটনে ক্লিক করুন।");
 };
 
-// PASTE EDITS: সেভ করা সেটিংস নতুন ছবিতে বসানো
+// PASTE EDITS: কপি করা এডিট নতুন ছবিতে বসানো
 document.getElementById('pasteSettings').onclick = () => {
-    if (!savedEdit) return alert("Nothing to paste! Copy edits from a photo first.");
+    if (!savedEdit) return alert("আগে একটি ছবির এডিট Copy করুন!");
     controls.forEach(id => elements[id].value = savedEdit[id]);
     applyFilters();
 };
 
-// ডাউনলোড লজিক
+// ডাউনলোড/এক্সপোর্ট লজিক
 document.getElementById('downloadBtn').onclick = () => {
-    if(!mainImage.src) return alert("No image to export!");
+    if(!mainImage.src) return alert("ডাউনলোড করার জন্য কোনো ছবি নেই!");
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     canvas.width = mainImage.naturalWidth;
@@ -68,7 +70,7 @@ document.getElementById('downloadBtn').onclick = () => {
     ctx.filter = getComputedStyle(mainImage).filter;
     ctx.drawImage(mainImage, 0, 0);
     const link = document.createElement('a');
-    link.download = 'aesthetic_export.png';
+    link.download = 'cinema_edit_pro.png';
     link.href = canvas.toDataURL();
     link.click();
 };

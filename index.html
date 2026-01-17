@@ -3,67 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CINEMA EDIT | Pro Photo Editor</title>
+    <title>CINEMA EDIT | PRO</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <nav class="navbar">
         <div class="logo">CINEMA<span>EDIT</span></div>
-        <button class="save-btn" id="downloadBtn">Download Masterpiece</button>
+        <button class="save-btn" id="downloadBtn">Save Photo</button>
     </nav>
 
     <main class="editor-container">
         <section class="preview-panel">
             <div class="canvas-box" id="canvasBox">
-                <img id="main-image" src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=1000&q=80" alt="Preview">
+                <img id="main-image" src="" alt="Please upload a photo" style="display:none;">
                 <div class="vignette-overlay" id="vignette"></div>
                 <div class="grain-overlay" id="grain"></div>
             </div>
         </section>
 
         <aside class="controls-panel">
-            <h3>Cinematic Controls</h3>
+            <input type="file" id="upload" accept="image/*" hidden>
+            <label for="upload" class="upload-label">UPLOAD PHOTO</label>
             
             <div class="control-group">
-                <label>Exposure (Brightness)</label>
+                <label>Brightness</label>
                 <input type="range" id="brightness" min="0" max="200" value="100">
             </div>
-
             <div class="control-group">
                 <label>Contrast</label>
                 <input type="range" id="contrast" min="0" max="200" value="100">
             </div>
-
             <div class="control-group">
-                <label>Saturation (Colors)</label>
+                <label>Saturation</label>
                 <input type="range" id="saturation" min="0" max="200" value="100">
             </div>
-
-            <div class="control-group">
-                <label>Film Grain</label>
-                <input type="range" id="grainRange" min="0" max="100" value="0">
-            </div>
-
             <div class="control-group">
                 <label>Vignette</label>
                 <input type="range" id="vignetteRange" min="0" max="100" value="0">
             </div>
 
-            <div class="presets">
-                <h4>Cinematic Presets</h4>
-                <div class="preset-grid">
-                    <button class="preset-btn" data-type="noir">Noir</button>
-                    <button class="preset-btn" data-type="teal">Teal & Orange</button>
-                    <button class="preset-btn" data-type="vintage">Vintage</button>
-                    <button class="preset-btn" data-type="reset">Reset</button>
-                </div>
+            <div class="preset-grid">
+                <button class="preset-btn" data-type="noir">Noir</button>
+                <button class="preset-btn" data-type="teal">Teal & Orange</button>
+                <button class="preset-btn" data-type="reset">Reset</button>
             </div>
-            
-            <input type="file" id="upload" hidden>
-            <label for="upload" class="upload-label">Upload New Photo</label>
         </aside>
     </main>
-
     <script src="script.js"></script>
 </body>
 </html>

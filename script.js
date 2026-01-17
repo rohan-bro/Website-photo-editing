@@ -15,14 +15,53 @@ uploadInput.onchange = (e) => {
         reader.onload = (event) => {
             mainImage.src = event.target.result;
             mainImage.style.display = 'block';
-            applyFilters();
+            
+            // ছবি আসার পর অটো-স্ক্যান করার অপশন
+            setTimeout(() => {
+                if(confirm("Do you want to extract Preset from this photo?")) {
+                    analyzeImageSettings(mainImage);
+                }
+            }, 500);
         };
         reader.readAsDataURL(file);
     }
 };
 
+// এই ফাংশনটি ছবির পিক্সেল স্ক্যান করে এডিট কপি করবে
+function analyzeImageSettings(img) {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = 100; // স্পিড বাড়ানোর জন্য ছোট সাইজে স্ক্যান
+    canvas.height = 100;
+    ctx.drawImage(img, 0, 0, 100, 100);
+    
+    const imageData = ctx.getImageData(0, 0, 100, 100).data;
+    let r = 0, g = 0, b = 0, avgBrightness = 0;
+
+    for (let i = 0; i < imageData.length; i += 4) {
+        r += imageData[i];
+        g += imageData[i + 1];
+        b += imageData[i + 2];
+        avgBrightness += (imageData[i] + imageData[i + 1] + imageData[i + 2]) / 3;
+    }
+
+    // স্লাইডারের জন্য ভ্যালু ক্যালকুলেশন
+    const totalPixels = 100 * 100;
+    const brightnessLevel = (avgBrightness / totalPixels);
+    
+    // অটো অ্যাডজাস্টমেন্ট লজিক
+    elements['brightness'].value = brightnessLevel < 128 ? 130 : 100;
+    elements['contrast'].value = 125;
+    elements['saturation'].value = (r > g && r > b) ? 140 : 110; // যদি লালচে হয় তবে স্যাচুরেশন বাড়বে
+    elements['hue'].value = (g > b) ? 10 : 0; // হালকা গোল্ডেন টোন
+    elements['vignetteRange'].value = 30;
+
+    applyFilters();
+    alert("✨ Preset settings extracted! Now upload your photo.");
+}
+
 function applyFilters() {
-    if(!mainImage.src || mainImage.src === "") return;
+    if(!mainImage.src) return;
     const { brightness, contrast, saturation, hue, blur, vignetteRange } = elements;
     const filterStr = `brightness(${brightness.value}%) contrast(${contrast.value}%) saturate(${saturation.value}%) hue-rotate(${hue.value}deg) blur(${blur.value}px)`;
     mainImage.style.filter = filterStr;
@@ -32,8 +71,8 @@ function applyFilters() {
 
 Object.values(elements).forEach(el => el.oninput = applyFilters);
 
+// ম্যানুয়াল কপি-পেস্ট আগের মতোই থাকবে
 document.getElementById('copySettings').onclick = () => {
-    if(!mainImage.src) return alert("Upload photo first!");
     savedEdit = {};
     controls.forEach(id => savedEdit[id] = elements[id].value);
     alert("Settings Copied!");
@@ -54,7 +93,7 @@ document.getElementById('downloadBtn').onclick = () => {
     ctx.filter = getComputedStyle(mainImage).filter;
     ctx.drawImage(mainImage, 0, 0, canvas.width, canvas.height);
     const link = document.createElement('a');
-    link.download = 'edited_photo.png';
-    link.href = canvas.toDataURL('image/png', 1.0);
+    link.download = 'preset_applied.png';
+    link.href = canvas.toDataURL('image/png');
     link.click();
 };

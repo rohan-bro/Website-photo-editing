@@ -1,68 +1,59 @@
-const uploadInput = document.getElementById('upload');
 const mainImage = document.getElementById('main-image');
+const uploadInput = document.getElementById('upload');
 const vignette = document.getElementById('vignette');
-const downloadBtn = document.getElementById('downloadBtn');
 
-// স্লাইডার এলিমেন্ট
 const brightness = document.getElementById('brightness');
 const contrast = document.getElementById('contrast');
 const saturation = document.getElementById('saturation');
 const hue = document.getElementById('hue');
 const blur = document.getElementById('blur');
-const sepia = document.getElementById('sepia');
 const vignetteRange = document.getElementById('vignetteRange');
 
-// ছবি আপলোড ফাংশন
-uploadInput.addEventListener('change', function(e) {
+let savedStyles = null;
+
+uploadInput.onchange = (e) => {
     const file = e.target.files[0];
     if (file) {
         const reader = new FileReader();
-        reader.onload = function(event) {
+        reader.onload = (event) => {
             mainImage.src = event.target.result;
             mainImage.style.display = 'block';
-        }
+        };
         reader.readAsDataURL(file);
     }
-});
+};
 
-// ফিল্টার অ্যাপ্লাই ফাংশন
 function applyFilters() {
-    mainImage.style.filter = `
-        brightness(${brightness.value}%) 
-        contrast(${contrast.value}%) 
-        saturate(${saturation.value}%)
-        hue-rotate(${hue.value}deg)
-        blur(${blur.value}px)
-        sepia(${sepia.value}%)
-    `;
+    mainImage.style.filter = `brightness(${brightness.value}%) contrast(${contrast.value}%) saturate(${saturation.value}%) hue-rotate(${hue.value}deg) blur(${blur.value}px)`;
     vignette.style.boxShadow = `inset 0 0 ${vignetteRange.value * 2.5}px rgba(0,0,0,0.9)`;
 }
 
-// সব স্লাইডারে ইভেন্ট লিসেনার
-[brightness, contrast, saturation, hue, blur, sepia, vignetteRange].forEach(input => {
-    input.addEventListener('input', applyFilters);
+[brightness, contrast, saturation, hue, blur, vignetteRange].forEach(item => {
+    item.oninput = applyFilters;
 });
 
-// প্রিসেট লজিক
-document.querySelectorAll('.preset-btn').forEach(btn => {
-    btn.onclick = () => {
-        const type = btn.getAttribute('data-type');
-        resetValues();
-        if (type === 'noir') { saturation.value = 0; contrast.value = 150; brightness.value = 110; }
-        else if (type === 'teal') { hue.value = 170; saturation.value = 150; contrast.value = 120; }
-        else if (type === 'vintage') { sepia.value = 60; contrast.value = 90; brightness.value = 110; }
-        applyFilters();
+// COPY LOGIC: Eta diye onner preset chobir style copy koro
+document.getElementById('copySettings').onclick = () => {
+    if (!mainImage.src) return alert("Upload a photo first!");
+    savedStyles = {
+        b: brightness.value, c: contrast.value, s: saturation.value, h: hue.value, bl: blur.value, v: vignetteRange.value
     };
-});
+    alert("Style Copied! Now upload your photo and click 'Apply To New'.");
+};
 
-function resetValues() {
-    brightness.value = 100; contrast.value = 100; saturation.value = 100;
-    hue.value = 0; blur.value = 0; sepia.value = 0; vignetteRange.value = 0;
-}
+// PASTE LOGIC: Eta diye tomar chobite bosiye dao
+document.getElementById('pasteSettings').onclick = () => {
+    if (!savedStyles) return alert("Copy a style first!");
+    brightness.value = savedStyles.b;
+    contrast.value = savedStyles.c;
+    saturation.value = savedStyles.s;
+    hue.value = savedStyles.h;
+    blur.value = savedStyles.bl;
+    vignetteRange.value = savedStyles.v;
+    applyFilters();
+};
 
-// ডাউনলোড ফাংশন
-downloadBtn.onclick = () => {
-    if(!mainImage.src) return alert("Please upload an image first!");
+document.getElementById('downloadBtn').onclick = () => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     canvas.width = mainImage.naturalWidth;
@@ -70,7 +61,7 @@ downloadBtn.onclick = () => {
     ctx.filter = getComputedStyle(mainImage).filter;
     ctx.drawImage(mainImage, 0, 0);
     const link = document.createElement('a');
-    link.download = 'cinematic_edit.png';
+    link.download = 'edited.png';
     link.href = canvas.toDataURL();
     link.click();
 };
